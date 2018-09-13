@@ -1,63 +1,40 @@
-// definimos los pines y variables a utilizar
 #include <NewPing.h>
 
-const int trigPin = 9;
-const int echoPin = 10;
-//const int buzzer = 11;
-const int ledPin = 13;
-int i;
+#define TRIGGER_PIN 6
+#define ECHO_PIN 7
+#define MAX_DISTANCE 400 //Distancia maxima que queremos en centimetros.
+#define BUZZER 11
+#define LED_PIN 13
+NewPing sonar(TRIGGER_PIN,ECHO_PIN,MAX_DISTANCE);
 
-// definimos l variable
-long duration;
-int distance;
-int safetyDistance;
-
+int distanceCM;
+int safeDistance=200;
 void setup() {
-pinMode(trigPin, OUTPUT); //  trigPin como Output
-pinMode(echoPin, INPUT); //    echoPin como entrada Input
-//pinMode(buzzer, OUTPUT); //   Buzzer como salida
-pinMode(ledPin, OUTPUT); //   Led como salida
-Serial.begin(9600); // Iniciamos la comunicación serial
+  Serial.begin(9600); // Iniciamos la comunicación serial
+  pinMode(BUZZER, OUTPUT); //   Buzzer como salida
+  pinMode(LED_PIN, OUTPUT); //   Led como salida
 }
 
 void loop() {
-// inicializar trigPin
-digitalWrite(trigPin, LOW);
-delayMicroseconds(2);
-
-// trigPin activo por 10 micro segundos
-digitalWrite(trigPin, HIGH);
-delayMicroseconds(10);
-digitalWrite(trigPin, LOW);
-
-// Leemos echoPin, retornamos el tiempo de viaje de la onda de sonido en microsegundos
-duration = pulseIn(echoPin, HIGH);
-
-// Calculamos la distancia
-distance= duration*0.034/2;
-
-safetyDistance = distance;
-// avaluamos el rango de acercamiento
-if (safetyDistance <= 10){
-  for (i=0; i<=5; i++) {
-   //tone(buzzer, 540,3000);
-   delay(200);
-   //tone(buzzer, 740,3000);
-   delay(200);
-   digitalWrite(ledPin, HIGH);
-   delay(30);
-   digitalWrite(ledPin, LOW);
-  }  
-
-  digitalWrite(ledPin, HIGH);
-}
-else{
- // digitalWrite(buzzer, LOW);
-  digitalWrite(ledPin, LOW);
-}
-
-// Imprimimos la distancia en el monitor serial
-Serial.print("Distance: ");
-Serial.println(distance);
+  delay(100);
+  distanceCM=sonar.ping_cm();
+  Serial.print("Ping: ");
+  Serial.print(distanceCM); 
+  Serial.println(" cm"); 
+  if (distanceCM <= safeDistance){
+     for (int i=0; i<=5; i++) {
+        tone(BUZZER, 540,3000);
+        delay(200);
+        tone(BUZZER, 740,3000);
+        delay(200);
+        digitalWrite(LED_PIN, HIGH);
+        delay(30);
+        digitalWrite(LED_PIN, LOW);
+    }  
+    digitalWrite(LED_PIN, HIGH);
+  }else{
+  digitalWrite(BUZZER, LOW);
+  digitalWrite(LED_PIN, LOW);
+  }
 }
 

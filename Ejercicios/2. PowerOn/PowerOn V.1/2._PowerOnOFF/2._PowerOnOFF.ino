@@ -1,6 +1,6 @@
 //Práctica: encender y apagar un LED con un botón pulsador
-const int led=13; 
-const int boton=7; 
+const int led=9; 
+const int boton=8; 
 
 int val=0; //Almacena el estado del pulsador
 void setup(){
